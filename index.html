@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abunalar - Sub Panel</title>
+    <title>Abunalar - HUB Panel</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #0d1117; color: #ffffff; padding: 16px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; }
+        body { background-color: #0d111a; color: #ffffff; padding: 16px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
         
         .header-title { font-size: 22px; font-weight: bold; }
-        .header-subtitle { font-size: 13px; color: #8b949e; margin-bottom: 4px; }
+        .header-subtitle { font-size: 13px; color: #8b949e; margin-top: 2px; }
 
-        .btn-main { background: #f0f6fc; color: #1f2328; width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; margin-bottom: 4px; }
+        .btn-main { background: #3b82f6; color: #ffffff; width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
         
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+        .stat-card { background: #161c28; border: 1px solid #232d3f; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
         .stat-label { font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 6px; }
         .stat-value { font-size: 20px; font-weight: bold; }
         
-        .dot-blue { width: 8px; height: 8px; background: #58a6ff; border-radius: 50%; display: inline-block; }
-        .dot-green { width: 8px; height: 8px; background: #3fb950; border-radius: 50%; display: inline-block; }
-        .dot-orange { width: 8px; height: 8px; background: #d29922; border-radius: 50%; display: inline-block; }
-        .dot-purple { width: 8px; height: 8px; background: #bc8cff; border-radius: 50%; display: inline-block; }
+        .dot-blue { width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; display: inline-block; }
+        .dot-green { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; }
+        .dot-orange { width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; display: inline-block; }
+        .dot-purple { width: 8px; height: 8px; background: #8b5cf6; border-radius: 50%; display: inline-block; }
 
-        .section-box { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #c9d1d9; }
+        .section-box { background: #161c28; border: 1px solid #232d3f; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #c9d1d9; }
         
-        .search-input { background: #161b22; border: 1px solid #30363d; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
-        .search-input::placeholder { color: #8b949e; }
+        .search-input, .filter-select { background: #161c28; border: 1px solid #232d3f; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
+        .search-input::placeholder { color: #64748b; }
 
-        .btn-action { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        .filter-select { background: #161b22; border: 1px solid #30363d; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
+        .btn-action { background: #1e293b; border: 1px solid #334155; color: #c9d1d9; width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        .empty-area { text-align: center; color: #8b949e; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; }
+        .empty-area { text-align: center; color: #64748b; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; }
+
+        /* Modal / Form Styling */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; padding: 16px; z-index: 999; overflow-y: auto; }
+        .modal-content { background: #121824; border: 1px solid #232d3f; width: 100%; max-width: 440px; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; margin-bottom: 4px; }
+        .close-btn { background: #1e293b; border: none; color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        /* Modal Style */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: #161b22; border: 1px solid #30363d; width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .modal-content input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; outline: none; width: 100%; }
+        .form-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+        .form-input { background: #1a2333; border: 1px solid #28354a; color: white; padding: 12px; border-radius: 10px; outline: none; font-size: 14px; width: 100%; }
+        .form-input::placeholder { color: #475569; }
     </style>
 </head>
 <body>
@@ -74,7 +77,7 @@
         <span>🔗 Ähli abunalar (<span id="subCountText">0</span>)</span>
     </div>
 
-    <input type="text" class="search-input" id="searchInput" placeholder="Abunalary gözle..." onkeyup="filterSubs()">
+    <input type="text" class="search-input" id="searchInput" placeholder="Abunalary gözle..." onkeyup="renderSubs()">
 
     <button class="btn-action" onclick="renderSubs()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -91,82 +94,118 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal: HUB Açary Döret -->
 <div id="subModal" class="modal">
     <div class="modal-content">
-        <h3>Täze Abuna Goş</h3>
-        <input type="text" id="subName" placeholder="Abuna ady (Mysal: Server 1)">
-        <input type="text" id="subKey" placeholder="VLESS / VMess kody ýa-da URL">
-        <div style="display: flex; gap: 8px; margin-top: 8px;">
-            <button class="btn-action" style="background: #30363d;" onclick="closeModal()">Ýatyr</button>
-            <button class="btn-action" style="background: #238636; color: white; border: none;" onclick="saveSub()">Goş</button>
+        <div class="modal-header">
+            <span>HUB açary döret</span>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="form-label">AÇARYŇ ADY</div>
+        <input type="text" id="keyName" class="form-input" placeholder="Açar adyny giriziň">
+
+        <div class="form-label">MÖHLET (GÜN)</div>
+        <input type="number" id="keyDays" class="form-input" value="30">
+
+        <div class="form-label">KOD NÄÇE ADAM ÜÇIN (CIHAZ SANY, 0 = ÇÄKSIZ)</div>
+        <input type="number" id="keyDevices" class="form-input" value="0">
+
+        <div class="form-label">GB (0 = ÇÄKSIZ)</div>
+        <input type="number" id="keyGB" class="form-input" value="0">
+
+        <div class="form-label">BAÝDAK</div>
+        <select id="keyFlag" class="form-input">
+            <option value="Baýdaksyz">Baýdaksyz</option>
+            <option value="🇹🇲 Türkmenistan">🇹🇲 Türkmenistan</option>
+            <option value="🇹🇷 Türkiye">🇹🇷 Türkiye</option>
+            <option value="🇩🇪 Germany">🇩🇪 Germany</option>
+            <option value="🇺🇸 USA">🇺🇸 USA</option>
+        </select>
+
+        <div class="form-label">SÖZBAŞY (TITLE)</div>
+        <input type="text" id="keyTitle" class="form-input" placeholder="boş bolsa umumy sözbaşy">
+
+        <div class="form-label">TEKST (ANNOUNCE)</div>
+        <input type="text" id="keyAnnounce" class="form-input" value="Welcome {USERNAME} - {TIME_LEFT}">
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn-action" style="background: #1e293b;" onclick="closeModal()">Ýatyr</button>
+            <button class="btn-main" style="border-radius: 12px;" onclick="saveKey()">Döret</button>
         </div>
     </div>
 </div>
 
 <script>
-    function getSubs() {
-        return JSON.parse(localStorage.getItem('vpn_sub_panel') || '[]');
+    function getKeys() {
+        return JSON.parse(localStorage.getItem('hub_vpn_keys') || '[]');
     }
 
-    function saveToStorage(subs) {
-        localStorage.setItem('vpn_sub_panel', JSON.stringify(subs));
+    function saveToStorage(keys) {
+        localStorage.setItem('hub_vpn_keys', JSON.stringify(keys));
         renderSubs();
     }
 
     function openModal() { document.getElementById('subModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('subModal').style.display = 'none'; }
 
-    function saveSub() {
-        const name = document.getElementById('subName').value;
-        const key = document.getElementById('subKey').value;
-        if (!name || !key) return alert('Hemme meýdany dolduryň!');
+    function saveKey() {
+        const name = document.getElementById('keyName').value;
+        if (!name) return alert('Açaryň adyny giriziň!');
 
-        const subs = getSubs();
-        subs.push({ id: Date.now(), name, key, date: new Date().toLocaleDateString() });
-        saveToStorage(subs);
+        const keys = getKeys();
+        keys.push({
+            id: Date.now(),
+            name: name,
+            days: document.getElementById('keyDays').value,
+            devices: document.getElementById('keyDevices').value,
+            gb: document.getElementById('keyGB').value,
+            flag: document.getElementById('keyFlag').value,
+            title: document.getElementById('keyTitle').value,
+            announce: document.getElementById('keyAnnounce').value,
+            date: new Date().toLocaleDateString()
+        });
 
-        document.getElementById('subName').value = '';
-        document.getElementById('subKey').value = '';
+        saveToStorage(keys);
+        document.getElementById('keyName').value = '';
         closeModal();
     }
 
+    function deleteKey(id) {
+        let keys = getKeys();
+        keys = keys.filter(k => k.id !== id);
+        saveToStorage(keys);
+    }
+
     function renderSubs() {
-        const subs = getSubs();
+        const keys = getKeys();
+        const search = document.getElementById('searchInput').value.toLowerCase();
         const list = document.getElementById('subList');
         
-        document.getElementById('totalSubs').innerText = subs.length;
-        document.getElementById('activeSubs').innerText = subs.length;
-        document.getElementById('expSubs').innerText = 0;
-        document.getElementById('totalConfigs').innerText = subs.length;
-        document.getElementById('subCountText').innerText = subs.length;
+        const filtered = keys.filter(k => k.name.toLowerCase().includes(search));
 
-        if (subs.length === 0) {
+        document.getElementById('totalSubs').innerText = keys.length;
+        document.getElementById('activeSubs').innerText = keys.length;
+        document.getElementById('expSubs').innerText = 0;
+        document.getElementById('totalConfigs').innerText = keys.length;
+        document.getElementById('subCountText').innerText = keys.length;
+
+        if (filtered.length === 0) {
             list.innerHTML = `
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                 Entek abuna ýok. Başlamak üçin ilkinji abunyňyzy dörediň.`;
             return;
         }
 
-        list.innerHTML = subs.map(s => `
-            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 12px; width: 100%; display: flex; justify-content: space-between; align-items: center; text-align: left;">
+        list.innerHTML = filtered.map(k => `
+            <div style="background: #161c28; border: 1px solid #232d3f; border-radius: 12px; padding: 14px; width: 100%; display: flex; justify-content: space-between; align-items: center; text-align: left;">
                 <div>
-                    <div style="font-weight: bold; color: #58a6ff;">${s.name}</div>
-                    <div style="font-size: 11px; color: #8b949e; word-break: break-all; margin-top: 2px;">${s.key}</div>
+                    <div style="font-weight: bold; color: #3b82f6; font-size: 15px;">${k.flag !== 'Baýdaksyz' ? k.flag + ' ' : ''}${k.name}</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 4px;">Möhlet: ${k.days} gün | GB: ${k.gb == 0 ? 'Çäksiz' : k.gb + ' GB'}</div>
                 </div>
-                <button onclick="deleteSub(${s.id})" style="background: #da3633; color: white; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 12px;">Poz</button>
+                <button onclick="deleteKey(${k.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold;">Poz</button>
             </div>
         `).join('');
-    }
-
-    function deleteSub(id) {
-        let subs = getSubs();
-        subs = subs.filter(s => s.id !== id);
-        saveToStorage(subs);
-    }
-
-    function filterSubs() {
-        // Gözleg funksiýasy üçin ýönekeý filtr
     }
 
     renderSubs();
@@ -174,5 +213,6 @@
 
 </body>
 </html>
+
 
 
