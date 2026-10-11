@@ -1,179 +1,53 @@
-<!DOCTYPE html>
-<html lang="tk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abunalar - Sub Panel</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #0d1117; color: #ffffff; padding: 16px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; }
-        
-        .header-title { font-size: 22px; font-weight: bold; }
-        .header-subtitle { font-size: 13px; color: #8b949e; margin-bottom: 4px; }
-
-        .btn-main { background: #f0f6fc; color: #1f2328; width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
-        .btn-main:active { background: #d0d7de; }
-        
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
-        .stat-label { font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 6px; }
-        .stat-value { font-size: 20px; font-weight: bold; }
-        
-        .dot-blue { width: 8px; height: 8px; background: #58a6ff; border-radius: 50%; display: inline-block; }
-        .dot-green { width: 8px; height: 8px; background: #3fb950; border-radius: 50%; display: inline-block; }
-        .dot-orange { width: 8px; height: 8px; background: #d29922; border-radius: 50%; display: inline-block; }
-        .dot-purple { width: 8px; height: 8px; background: #bc8cff; border-radius: 50%; display: inline-block; }
-
-        .section-box { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #c9d1d9; }
-        
-        .search-input { background: #161b22; border: 1px solid #30363d; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
-        .search-input::placeholder { color: #8b949e; }
-
-        .btn-action { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        .filter-select { background: #161b22; border: 1px solid #30363d; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
-
-        .empty-area { text-align: center; color: #8b949e; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; }
-        
-        /* Modal Style */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; padding: 20px; z-index: 99; }
-        .modal-content { background: #161b22; border: 1px solid #30363d; width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .modal-content input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; outline: none; width: 100%; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div>
-        <div class="header-title">Abunalar</div>
-        <div class="header-subtitle">Abunalaryňyzy dolandyryň</div>
-    </div>
-
-    <button class="btn-main" onclick="openModal()">+ Täze abuna</button>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-blue"></span> Jemi abunalar</div>
-            <div class="stat-value" id="totalSubs">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-green"></span> Işjeň</div>
-            <div class="stat-value" id="activeSubs">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-orange"></span> Möhleti gutarýan</div>
-            <div class="stat-value" id="expSubs">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-purple"></span> Jemi konfigler</div>
-            <div class="stat-value" id="totalConfigs">0</div>
-        </div>
-    </div>
-
-    <div class="section-box">
-        <span>🔗 Ähli abunalar (<span id="subCountText">0</span>)</span>
-    </div>
-
-    <input type="text" class="search-input" id="searchInput" placeholder="Abunalary gözle..." onkeyup="renderSubs()">
-
-    <button class="btn-action" onclick="renderSubs()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        Täzele
-    </button>
-
-    <select class="filter-select">
-        <option>Ähli ýagdaý</option>
-    </select>
-
-    <div id="subList" class="empty-area">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Entek abuna ýok. Başlamak üçin ilkinji abunyňyzy dörediň.
-    </div>
-</div>
-
-<!-- Modal -->
+<!-- Modal: Hakyky VPN Link Goşmak üçin -->
 <div id="subModal" class="modal">
     <div class="modal-content">
-        <h3>Täze Abuna Goş</h3>
-        <input type="text" id="subName" placeholder="Abuna ady (Mysal: Server 1)">
-        <input type="text" id="subKey" placeholder="VLESS / VMess kody ýa-da URL">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px;">
+            <span>Hakyky VPN Açar Goş</span>
+            <button onclick="closeModal()" style="background:none; border:none; color:#8b949e; font-size:18px; cursor:pointer;">✕</button>
+        </div>
+
+        <div class="form-label">ABUNA / SERWER ADY</div>
+        <input type="text" id="subName" class="form-input" placeholder="Mysal: Marzban VLESS">
+
+        <div class="form-label">HAKYKY VLESS / VMESS KODY (URL)</div>
+        <input type="text" id="subConfig" class="form-input" placeholder="vless://... ýa-da sub linkiňiz">
+
+        <div class="form-label">SERWER ÝURDI</div>
+        <div class="country-list" style="max-height: 150px;">
+            <label class="country-item"><span class="country-name">🇹🇲 Türkmenistan</span><input type="radio" name="country" value="🇹🇲 Türkmenistan" checked></label>
+            <label class="country-item"><span class="country-name">🇹🇷 Türkiye</span><input type="radio" name="country" value="🇹🇷 Türkiye"></label>
+            <label class="country-item"><span class="country-name">🇩🇪 Germaniya</span><input type="radio" name="country" value="🇩🇪 Germaniya"></label>
+            <label class="country-item"><span class="country-name">🇺🇸 USA</span><input type="radio" name="country" value="🇺🇸 USA"></label>
+        </div>
+
         <div style="display: flex; gap: 8px; margin-top: 8px;">
             <button class="btn-action" style="background: #30363d;" onclick="closeModal()">Ýatyr</button>
-            <button class="btn-action" style="background: #238636; color: white; border: none;" onclick="saveSub()">Goş</button>
+            <button class="btn-action" style="background: #238636; color: white; border: none;" onclick="saveRealSub()">Goş</button>
         </div>
     </div>
 </div>
+function saveRealSub() {
+    const name = document.getElementById('subName').value;
+    const config = document.getElementById('subConfig').value;
+    if (!name || !config) return alert('Hemme meýdany dolduryň!');
 
-<script>
-    function getSubs() {
-        return JSON.parse(localStorage.getItem('vpn_sub_panel') || '[]');
-    }
+    const selectedCountry = document.querySelector('input[name="country"]:checked').value;
 
-    function saveToStorage(subs) {
-        localStorage.setItem('vpn_sub_panel', JSON.stringify(subs));
-        renderSubs();
-    }
+    const subs = getSubs();
+    subs.push({ 
+        id: Date.now(), 
+        name, 
+        country: selectedCountry, 
+        config: config, // Öz girizen hakyky VLESS/VMess kodyňyz
+        date: new Date().toLocaleDateString() 
+    });
+    saveToStorage(subs);
 
-    function openModal() { document.getElementById('subModal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('subModal').style.display = 'none'; }
+    document.getElementById('subName').value = '';
+    document.getElementById('subConfig').value = '';
+    closeModal();
+}
 
-    function saveSub() {
-        const name = document.getElementById('subName').value;
-        const key = document.getElementById('subKey').value;
-        if (!name || !key) return alert('Hemme meýdany dolduryň!');
-
-        const subs = getSubs();
-        subs.push({ id: Date.now(), name, key, date: new Date().toLocaleDateString() });
-        saveToStorage(subs);
-
-        document.getElementById('subName').value = '';
-        document.getElementById('subKey').value = '';
-        closeModal();
-    }
-
-    function deleteSub(id) {
-        let subs = getSubs();
-        subs = subs.filter(s => s.id !== id);
-        saveToStorage(subs);
-    }
-
-    function renderSubs() {
-        const subs = getSubs();
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const list = document.getElementById('subList');
-        
-        const filtered = subs.filter(s => s.name.toLowerCase().includes(search));
-
-        document.getElementById('totalSubs').innerText = subs.length;
-        document.getElementById('activeSubs').innerText = subs.length;
-        document.getElementById('expSubs').innerText = 0;
-        document.getElementById('totalConfigs').innerText = subs.length;
-        document.getElementById('subCountText').innerText = subs.length;
-
-        if (filtered.length === 0) {
-            list.innerHTML = `
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                Entek abuna ýok. Başlamak üçin ilkinji abunyňyzy dörediň.`;
-            return;
-        }
-
-        list.innerHTML = filtered.map(s => `
-            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 12px; width: 100%; display: flex; justify-content: space-between; align-items: center; text-align: left;">
-                <div>
-                    <div style="font-weight: bold; color: #58a6ff;">${s.name}</div>
-                    <div style="font-size: 11px; color: #8b949e; word-break: break-all; margin-top: 2px;">${s.key}</div>
-                </div>
-                <button onclick="deleteSub(${s.id})" style="background: #da3633; color: white; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 12px;">Poz</button>
-            </div>
-        `).join('');
-    }
-
-    renderSubs();
-</script>
-
-</body>
-</html>
 
 
 
