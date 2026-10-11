@@ -3,107 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abunalar - HUB Panel</title>
+    <title>Sub Panel - Happ VPN</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #0d111a; color: #ffffff; padding: 16px; display: flex; justify-content: center; }
+        body { background-color: #0b0f19; color: #ffffff; padding: 16px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
         
-        .header-title { font-size: 22px; font-weight: bold; }
-        .header-subtitle { font-size: 13px; color: #8b949e; margin-top: 2px; }
-
-        .btn-main { background: #3b82f6; color: #ffffff; width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
+        .card { background: #131b2e; border: 1px solid #1e293b; border-radius: 16px; padding: 16px; }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .card-desc { font-size: 13px; color: #94a3b8; margin-bottom: 12px; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-secondary { background: #1e293b; color: white; border: 1px solid #334155; }
         
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-card { background: #161c28; border: 1px solid #232d3f; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
-        .stat-label { font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 6px; }
-        .stat-value { font-size: 20px; font-weight: bold; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .search-input, .filter-select { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
         
-        .dot-blue { width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; display: inline-block; }
-        .dot-green { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; }
-        .dot-orange { width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; display: inline-block; }
-        .dot-purple { width: 8px; height: 8px; background: #8b5cf6; border-radius: 50%; display: inline-block; }
-
-        .section-box { background: #161c28; border: 1px solid #232d3f; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #c9d1d9; }
+        .key-item { background: #131b2e; border: 1px solid #1e293b; padding: 16px; border-radius: 16px; margin-top: 10px; display: flex; flex-direction: column; gap: 12px; }
+        .key-header { display: flex; justify-content: space-between; align-items: center; }
+        .key-name { font-weight: bold; font-size: 16px; color: white; }
+        .key-date { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2); }
         
-        .search-input, .filter-select { background: #161c28; border: 1px solid #232d3f; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
-        .search-input::placeholder { color: #64748b; }
-
-        .btn-action { background: #1e293b; border: 1px solid #334155; color: #c9d1d9; width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-
-        .empty-area { text-align: center; color: #64748b; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; }
-
-        /* Modal / Form Styling */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; padding: 16px; z-index: 999; overflow-y: auto; }
-        .modal-content { background: #121824; border: 1px solid #232d3f; width: 100%; max-width: 440px; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; margin-bottom: 4px; }
-        .close-btn { background: #1e293b; border: none; color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .key-details { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
         
-        .form-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
-        .form-input { background: #1a2333; border: 1px solid #28354a; color: white; padding: 12px; border-radius: 10px; outline: none; font-size: 14px; width: 100%; }
-        .form-input::placeholder { color: #475569; }
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .action-btn { background: #1e293b; border: 1px solid #334155; color: #60a5fa; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
+        .action-btn.danger { color: #f87171; border-color: rgba(248, 113, 113, 0.2); background: rgba(248, 113, 113, 0.05); }
+
+        /* Switch Toggle */
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: cursor; cursor: pointer; position: top 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; position: absolute; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; padding: 16px; z-index: 99; }
+        .modal-content { background: #131b2e; border: 1px solid #1e293b; width: 100%; max-width: 440px; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .form-label { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+        .form-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; font-size: 14px; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div>
-        <div class="header-title">Abunalar</div>
-        <div class="header-subtitle">Abunalaryňyzy dolandyryň</div>
-    </div>
-
-    <button class="btn-main" onclick="openModal()">+ Täze abuna</button>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-blue"></span> Jemi abunalar</div>
-            <div class="stat-value" id="totalSubs">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-green"></span> Işjeň</div>
-            <div class="stat-value" id="activeSubs">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-orange"></span> Möhleti gutarýan</div>
-            <div class="stat-value" id="expSubs">0</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="dot-purple"></span> Jemi konfigler</div>
-            <div class="stat-value" id="totalConfigs">0</div>
+    <div class="card">
+        <div class="card-title">Sub Panel [ Admin ]</div>
+        <div class="card-desc">📢 Hoş geldiňiz! Baglanyşyklary we serwerleri sazlamalardan dolandyryň.</div>
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="alert('Goldaw bölümi')">💬 Goldaw</button>
+            <button class="btn btn-secondary" onclick="alert('Kanal bölümi')">💬 Kanal</button>
         </div>
     </div>
 
-    <div class="section-box">
-        <span>🔗 Ähli abunalar (<span id="subCountText">0</span>)</span>
+    <div class="section-header">
+        <h3 id="panelCount">HUB açary (0)</h3>
+        <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="openModal()">+ Döret</button>
     </div>
-
-    <input type="text" class="search-input" id="searchInput" placeholder="Abunalary gözle..." onkeyup="renderSubs()">
-
-    <button class="btn-action" onclick="renderSubs()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        Täzele
-    </button>
 
     <select class="filter-select">
-        <option>Ähli ýagdaý</option>
+        <option>Ähli açarlar</option>
     </select>
 
-    <div id="subList" class="empty-area">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Entek abuna ýok. Başlamak üçin ilkinji abunyňyzy dörediň.
+    <input type="text" class="search-input" id="searchInput" placeholder="Açar gözle..." onkeyup="renderKeys()">
+
+    <div id="keyList">
+        <div style="text-align: center; color: #64748b; padding: 30px; font-size: 14px;">Açar ýok</div>
     </div>
 </div>
 
 <!-- Modal: HUB Açary Döret -->
 <div id="subModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <span>HUB açary döret</span>
-            <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-
+        <div style="font-weight: bold; font-size: 18px; margin-bottom: 4px;">HUB açary döret</div>
+        
         <div class="form-label">AÇARYŇ ADY</div>
-        <input type="text" id="keyName" class="form-input" placeholder="Açar adyny giriziň">
+        <input type="text" id="keyName" class="form-input" placeholder="Mysal: Resul">
 
         <div class="form-label">MÖHLET (GÜN)</div>
         <input type="number" id="keyDays" class="form-input" value="30">
@@ -114,36 +91,21 @@
         <div class="form-label">GB (0 = ÇÄKSIZ)</div>
         <input type="number" id="keyGB" class="form-input" value="0">
 
-        <div class="form-label">BAÝDAK</div>
-        <select id="keyFlag" class="form-input">
-            <option value="Baýdaksyz">Baýdaksyz</option>
-            <option value="🇹🇲 Türkmenistan">🇹🇲 Türkmenistan</option>
-            <option value="🇹🇷 Türkiye">🇹🇷 Türkiye</option>
-            <option value="🇩🇪 Germany">🇩🇪 Germany</option>
-            <option value="🇺🇸 USA">🇺🇸 USA</option>
-        </select>
-
-        <div class="form-label">SÖZBAŞY (TITLE)</div>
-        <input type="text" id="keyTitle" class="form-input" placeholder="boş bolsa umumy sözbaşy">
-
-        <div class="form-label">TEKST (ANNOUNCE)</div>
-        <input type="text" id="keyAnnounce" class="form-input" value="Welcome {USERNAME} - {TIME_LEFT}">
-
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn-action" style="background: #1e293b;" onclick="closeModal()">Ýatyr</button>
-            <button class="btn-main" style="border-radius: 12px;" onclick="saveKey()">Döret</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Ýatyr</button>
+            <button class="btn btn-primary" onclick="saveKey()">Döret</button>
         </div>
     </div>
 </div>
 
 <script>
     function getKeys() {
-        return JSON.parse(localStorage.getItem('hub_vpn_keys') || '[]');
+        return JSON.parse(localStorage.getItem('hub_advanced_keys') || '[]');
     }
 
     function saveToStorage(keys) {
-        localStorage.setItem('hub_vpn_keys', JSON.stringify(keys));
-        renderSubs();
+        localStorage.setItem('hub_advanced_keys', JSON.stringify(keys));
+        renderKeys();
     }
 
     function openModal() { document.getElementById('subModal').style.display = 'flex'; }
@@ -154,21 +116,31 @@
         if (!name) return alert('Açaryň adyny giriziň!');
 
         const keys = getKeys();
+        
+        // Sene hasaplaýyş (30 gün sonrasy)
+        let expDate = new Date();
+        expDate.setDate(expDate.getDate() + parseInt(document.getElementById('keyDays').value || 30));
+        let formattedDate = ('0' + expDate.getDate()).slice(-2) + '.' + ('0' + (expDate.getMonth()+1)).slice(-2) + '.' + expDate.getFullYear();
+
         keys.push({
             id: Date.now(),
             name: name,
-            days: document.getElementById('keyDays').value,
             devices: document.getElementById('keyDevices').value,
             gb: document.getElementById('keyGB').value,
-            flag: document.getElementById('keyFlag').value,
-            title: document.getElementById('keyTitle').value,
-            announce: document.getElementById('keyAnnounce').value,
-            date: new Date().toLocaleDateString()
+            date: formattedDate,
+            active: true,
+            config: "vless://sample-uuid@server-ip:443?security=reality# " + name
         });
 
         saveToStorage(keys);
         document.getElementById('keyName').value = '';
         closeModal();
+    }
+
+    function toggleStatus(id) {
+        let keys = getKeys();
+        keys = keys.map(k => k.id === id ? {...k, active: !k.active} : k);
+        saveToStorage(keys);
     }
 
     function deleteKey(id) {
@@ -177,42 +149,56 @@
         saveToStorage(keys);
     }
 
-    function renderSubs() {
+    function copyText(text) {
+        navigator.clipboard.writeText(text);
+        alert('Göçürildi!');
+    }
+
+    function renderKeys() {
         const keys = getKeys();
         const search = document.getElementById('searchInput').value.toLowerCase();
-        const list = document.getElementById('subList');
+        const list = document.getElementById('keyList');
         
         const filtered = keys.filter(k => k.name.toLowerCase().includes(search));
-
-        document.getElementById('totalSubs').innerText = keys.length;
-        document.getElementById('activeSubs').innerText = keys.length;
-        document.getElementById('expSubs').innerText = 0;
-        document.getElementById('totalConfigs').innerText = keys.length;
-        document.getElementById('subCountText').innerText = keys.length;
+        document.getElementById('panelCount').innerText = `HUB açary (${keys.length})`;
 
         if (filtered.length === 0) {
-            list.innerHTML = `
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                Entek abuna ýok. Başlamak üçin ilkinji abunyňyzy dörediň.`;
+            list.innerHTML = '<div style="text-align: center; color: #64748b; padding: 30px; font-size: 14px;">Açar ýok</div>';
             return;
         }
 
         list.innerHTML = filtered.map(k => `
-            <div style="background: #161c28; border: 1px solid #232d3f; border-radius: 12px; padding: 14px; width: 100%; display: flex; justify-content: space-between; align-items: center; text-align: left;">
-                <div>
-                    <div style="font-weight: bold; color: #3b82f6; font-size: 15px;">${k.flag !== 'Baýdaksyz' ? k.flag + ' ' : ''}${k.name}</div>
-                    <div style="font-size: 12px; color: #8b949e; margin-top: 4px;">Möhlet: ${k.days} gün | GB: ${k.gb == 0 ? 'Çäksiz' : k.gb + ' GB'}</div>
+            <div class="key-item">
+                <div class="key-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label class="switch">
+                            <input type="checkbox" ${k.active ? 'checked' : ''} onchange="toggleStatus(${k.id})">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="key-name">${k.name}</span>
+                    </div>
+                    <span class="key-date">${k.date}</span>
                 </div>
-                <button onclick="deleteKey(${k.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold;">Poz</button>
+                <div class="key-details">
+                    <span>⚡ Happ 🔒</span> • <span>Device 0/${k.devices == 0 ? '∞' : k.devices}</span>
+                </div>
+                <div class="action-grid">
+                    <button class="action-btn" onclick="copyText('${k.config}')">Göçür</button>
+                    <button class="action-btn" onclick="copyText('${k.config}')">Happ crypt göçür</button>
+                    <button class="action-btn" onclick="alert('Möhlet: ${k.date}')">Möhlet</button>
+                    <button class="action-btn" onclick="alert('Cihazlar arassalandy!')">Cihazlary arassala</button>
+                    <button class="action-btn danger" onclick="deleteKey(${k.id})">Poz</button>
+                </div>
             </div>
         `).join('');
     }
 
-    renderSubs();
+    renderKeys();
 </script>
 
 </body>
 </html>
+
 
 
 
