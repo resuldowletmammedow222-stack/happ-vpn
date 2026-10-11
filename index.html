@@ -3,10 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happ VPN</title>
+    <title>Sub Panel - Happ VPN</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #0b0f19; color: #ffffff; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .logo { font-size: 20px; font-weight: bold; color: #3b82f6; display: flex; align-items: center; gap: 8px; }
+        .badge { background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .card { background: #131b2e; border: 1px solid #1e293b; border-radius: 16px; padding: 16px; }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .card-desc { font-size: 13px; color: #94a3b8; margin-bottom: 12px; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-secondary { background: #1e293b; color: white; border: 1px solid #334155; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; font-size: 14px; outline: none; }
+        .key-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+        .key-item { background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .key-info { font-size: 13px; word-break: break-all; }
+        .key-name { font-weight: bold; color: #60a5fa; }
+        .empty-state { text-align: center; color: #64748b; padding: 20px; font-size: 14px; }
+    </style>
 </head>
 <body>
-    <h1>Happ VPN Paneline Hoş Geldiniz</h1>
-    <p>Proje başarıyla Netlify üzerinde yayınlandı.</p>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">⚡ Sub Panel <span class="badge">PRO</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Sub Panel [ Admin ]</div>
+        <div class="card-desc">📢 Hoş geldiňiz! Baglanyşyklary we serwerleri sazlamalardan dolandyryň.</div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="alert('Goldaw bölümi')">💬 Goldaw</button>
+            <button class="btn btn-primary" onclick="alert('Kanal bölümi')">💬 Kanal</button>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h3>HUB açarlary</h3>
+        <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="toggleAddForm()">+ Döret</button>
+    </div>
+
+    <div id="addForm" class="card" style="display: none;">
+        <div class="card-title">Täze Açar Goş</div>
+        <div class="input-group">
+            <input type="text" id="keyName" placeholder="Açar ady (Örn: Server 1)">
+            <input type="text" id="keyValue" placeholder="VLESS / VMess / Shadowsocks kody">
+            <button class="btn btn-primary" onclick="addKey()">Ýazdyr</button>
+        </div>
+    </div>
+
+    <div id="keyList" class="key-list"></div>
+</div>
+
+<script>
+    function getKeys() {
+        return JSON.parse(localStorage.getItem('v2ray_keys') || '[]');
+    }
+
+    function saveKeys(keys) {
+        localStorage.setItem('v2ray_keys', JSON.stringify(keys));
+        renderKeys();
+    }
+
+    function toggleAddForm() {
+        const form = document.getElementById('addForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addKey() {
+        const name = document.getElementById('keyName').value;
+        const val = document.getElementById('keyValue').value;
+        if (!name || !val) return alert('Lütfen tüm alanları doldurun');
+
+        const keys = getKeys();
+        keys.push({ id: Date.now(), name, val });
+        saveKeys(keys);
+
+        document.getElementById('keyName').value = '';
+        document.getElementById('keyValue').value = '';
+        toggleAddForm();
+    }
+
+    function deleteKey(id) {
+        let keys = getKeys();
+        keys = keys.filter(k => k.id !== id);
+        saveKeys(keys);
+    }
+
+    function renderKeys() {
+        const keys = getKeys();
+        const list = document.getElementById('keyList');
+        if (keys.length === 0) {
+            list.innerHTML = '<div class="empty-state">Açar ýok</div>';
+            return;
+        }
+        list.innerHTML = keys.map(k => `
+            <div class="key-item">
+                <div class="key-info">
+                    <div class="key-name">${k.name}</div>
+                    <div style="color:#94a3b8; font-size:11px;">${k.val.substring(0, 30)}...</div>
+                </div>
+                <button class="btn btn-secondary" style="width:auto; padding:6px 10px;" onclick="deleteKey(${k.id})">Poz</button>
+            </div>
+        `).join('');
+    }
+
+    renderKeys();
+</script>
+
 </body>
 </html>
+
