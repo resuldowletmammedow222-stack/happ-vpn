@@ -1,0 +1,10 @@
+{
+  "name": "resulvpn-panel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sub Panel with online subscription links (Netlify Functions + Netlify Blobs)",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
