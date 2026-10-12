@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Abunalar - Sub Panel</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #0d1117; color: #ffffff; padding: 16px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; }
+
+        .header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+        .header-title { font-size: 22px; font-weight: bold; }
+        .header-subtitle { font-size: 13px; color: #8b949e; margin-bottom: 4px; }
+        .link-btn { background: none; border: none; color: #8b949e; font-size: 12px; cursor: pointer; padding: 4px 0; }
+
+        .btn-main { background: #f0f6fc; color: #1f2328; width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
+        .top-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+        .stat-label { font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 6px; }
+        .stat-value { font-size: 20px; font-weight: bold; }
+
+        .dot-blue { width: 8px; height: 8px; background: #58a6ff; border-radius: 50%; display: inline-block; }
+        .dot-green { width: 8px; height: 8px; background: #3fb950; border-radius: 50%; display: inline-block; }
+        .dot-orange { width: 8px; height: 8px; background: #d29922; border-radius: 50%; display: inline-block; }
+        .dot-purple { width: 8px; height: 8px; background: #bc8cff; border-radius: 50%; display: inline-block; }
+
+        .section-box { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #c9d1d9; }
+        .search-input { background: #161b22; border: 1px solid #30363d; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
+        .search-input::placeholder { color: #8b949e; }
+        .btn-action { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
+        .filter-select { background: #161b22; border: 1px solid #30363d; color: white; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; width: 100%; }
+        .empty-area { text-align: center; color: #8b949e; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; }
+        #subList { display: flex; flex-direction: column; gap: 10px; }
+        #subList.empty-area { gap: 12px; }
+
+        /* Modal Style */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; padding: 16px; z-index: 99; overflow-y: auto; }
+        .modal-content { background: #161b22; border: 1px solid #30363d; width: 100%; max-width: 440px; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; max-height: 90vh; overflow-y: auto; }
+
+        .country-list { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; background: #0d1117; padding: 8px; border-radius: 10px; border: 1px solid #30363d; }
+        .country-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; cursor: pointer; font-size: 14px; }
+        .country-item input[type="radio"] { accent-color: #58a6ff; width: 16px; height: 16px; cursor: pointer; }
+
+        .form-label { font-size: 11px; text-transform: uppercase; color: #8b949e; font-weight: 700; margin-top: 4px; }
+        .form-input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 10px 12px; border-radius: 8px; outline: none; width: 100%; font-size: 14px; }
+        textarea.form-input { min-height: 96px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+        .form-hint { font-size: 12px; color: #8b949e; line-height: 1.4; }
+        .form-error { font-size: 13px; color: #f85149; min-height: 16px; }
+
+        /* Switch Toggle */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #30363d; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3fb950; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Key Card Action Grid */
+        .key-card { background: #161b22; border: 1px solid #30363d; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; width: 100%; text-align: left; }
+        .key-card.is-off { opacity: .75; }
+        .key-title { font-weight: bold; font-size: 15px; color: #58a6ff; overflow-wrap: anywhere; }
+        .key-meta { font-size: 11px; color: #8b949e; margin-top: 2px; }
+        .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; border: 1px solid; }
+        .badge.active { background: rgba(63, 185, 80, 0.1); color: #3fb950; border-color: rgba(63, 185, 80, 0.2); }
+        .badge.expired { background: rgba(210, 153, 34, 0.1); color: #d29922; border-color: rgba(210, 153, 34, 0.25); }
+        .badge.disabled { background: rgba(139, 148, 158, 0.1); color: #8b949e; border-color: rgba(139, 148, 158, 0.25); }
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .action-btn { background: #21262d; border: 1px solid #30363d; color: #58a6ff; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
+        .action-btn.danger { color: #f85149; border-color: rgba(248, 81, 73, 0.3); background: rgba(248, 81, 73, 0.05); }
+
+        #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #21262d; border: 1px solid #30363d; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90%; text-align: center; }
+        #toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-row">
+        <div>
+            <div class="header-title">Abunalar</div>
+            <div class="header-subtitle">Abunalaryňyzy dolandyryň</div>
+        </div>
+        <button class="link-btn" onclick="logout()">Çykyş</button>
+    </div>
+
+    <div class="top-actions">
+        <button class="btn-main" onclick="openModal()">+ Täze abuna</button>
+        <button class="btn-action" onclick="openServers()">⚙ Serwerler</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label"><span class="dot-blue"></span> Jemi abunalar</div>
+            <div class="stat-value" id="totalSubs">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="dot-green"></span> Işjeň</div>
+            <div class="stat-value" id="activeSubs">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="dot-orange"></span> Möhleti gutarýan</div>
+            <div class="stat-value" id="expSubs">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="dot-purple"></span> Jemi konfigler</div>
+            <div class="stat-value" id="totalConfigs">0</div>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <span>🔗 Ähli abunalar (<span id="subCountText">0</span>)</span>
+    </div>
+
+    <input type="text" class="search-input" id="searchInput" placeholder="Abunalary gözle..." onkeyup="renderSubs()">
+
+    <button class="btn-action" onclick="loadKeys()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Täzele
+    </button>
+
+    <select class="filter-select" id="statusFilter" onchange="renderSubs()">
+        <option value="all">Ähli ýagdaý</option>
+        <option value="active">Işjeň</option>
+        <option value="expired">Möhleti gutaran</option>
+        <option value="disabled">Öçürilen</option>
+    </select>
+
+    <div id="subList" class="empty-area">Ýüklenýär...</div>
+</div>
+
+<!-- Modal: Login -->
+<div id="loginModal" class="modal">
+    <form class="modal-content" onsubmit="return doLogin(event)">
+        <div style="font-weight: bold; font-size: 16px;">Panele girmek</div>
+        <div class="form-hint">Netlify-da ADMIN_PASSWORD hökmünde goýan paroluňyzy giriziň.</div>
+        <input type="password" id="loginPassword" class="form-input" placeholder="Parol" autocomplete="current-password">
+        <div class="form-error" id="loginError"></div>
+        <button type="submit" class="btn-action" style="background: #238636; color: white; border: none;">Gir</button>
+    </form>
+</div>
+
+<!-- Modal: HUB Açary Döret -->
+<div id="subModal" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px;">
+            <span>HUB açary döret</span>
+            <button onclick="closeModal()" style="background:none; border:none; color:#8b949e; font-size:18px; cursor:pointer;">✕</button>
+        </div>
+
+        <div class="form-label">Açaryň ady</div>
+        <input type="text" id="keyName" class="form-input" placeholder="Açar adyny giriziň">
+
+        <div class="form-label">Möhlet (Gün)</div>
+        <input type="number" id="keyDays" class="form-input" value="30">
+
+        <div class="form-label">Kod näçe adam üçin (Cihaz sany, 0 = Çäksiz)</div>
+        <input type="number" id="keyDevices" class="form-input" value="0">
+
+        <div class="form-label">GB (0 = Çäksiz)</div>
+        <input type="number" id="keyGB" class="form-input" value="0">
+
+        <div class="form-label">Baýdak we Serwer ýurdy</div>
+        <div class="country-list" id="countryList">
+            <label class="country-item"><span>🇹🇲 Türkmenistan</span><input type="radio" name="country" value="🇹🇲 Türkmenistan" checked></label>
+            <label class="country-item"><span>🇹🇷 Türkiye</span><input type="radio" name="country" value="🇹🇷 Türkiye"></label>
+            <label class="country-item"><span>🇷🇺 Russiya</span><input type="radio" name="country" value="🇷🇺 Russiya"></label>
+            <label class="country-item"><span>🇺🇿 Özbegistan</span><input type="radio" name="country" value="🇺🇿 Özbegistan"></label>
+            <label class="country-item"><span>🇰🇿 Gazagystan</span><input type="radio" name="country" value="🇰🇿 Gazagystan"></label>
+            <label class="country-item"><span>🇦🇿 Azerbaýjan</span><input type="radio" name="country" value="🇦🇿 Azerbaýjan"></label>
+            <label class="country-item"><span>🇩🇪 Germaniya</span><input type="radio" name="country" value="🇩🇪 Germaniya"></label>
+            <label class="country-item"><span>🇺🇸 USA</span><input type="radio" name="country" value="🇺🇸 USA"></label>
+            <label class="country-item"><span>🇳🇱 Niderland</span><input type="radio" name="country" value="🇳🇱 Niderland"></label>
+            <label class="country-item"><span>🇵🇱 Polşa</span><input type="radio" name="country" value="🇵🇱 Polşa"></label>
+            <label class="country-item"><span>🇫🇷 Fransiya</span><input type="radio" name="country" value="🇫🇷 Fransiya"></label>
+            <label class="country-item"><span>🇬🇧 Angliýa</span><input type="radio" name="country" value="🇬🇧 Angliýa"></label>
+        </div>
+
+        <div class="form-label">Sözbaşy (Title)</div>
+        <input type="text" id="keyTitle" class="form-input" maxlength="25" placeholder="boş bolsa umumy sözbaşy">
+
+        <div class="form-label">Tekst (Announce)</div>
+        <input type="text" id="keyAnnounce" class="form-input" value="Welcome {USERNAME} - {TIME_LEFT}">
+
+        <div class="form-label">Konfigler (islege görä)</div>
+        <textarea id="keyConfigs" class="form-input" placeholder="vless://...&#10;vless://..."></textarea>
+        <div class="form-hint">Her setirde bir link. Boş goýsaňyz, saýlanan ýurduň «Serwerler» bölüminde goşan linkleri ulanylýar.</div>
+
+        <div class="form-error" id="createError"></div>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button class="btn-action" style="background: #30363d;" onclick="closeModal()">Ýatyr</button>
+            <button class="btn-action" style="background: #238636; color: white; border: none;" id="createBtn" onclick="saveKey()">Döret</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Serwerler -->
+<div id="serversModal" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px;">
+            <span>Serwerler (ýurt boýunça)</span>
+            <button onclick="closeServers()" style="background:none; border:none; color:#8b949e; font-size:18px; cursor:pointer;">✕</button>
+        </div>
+        <div class="form-hint">Her ýurt üçin hakyky serwer linklerini (vless://, vmess://, trojan://, ss://...) goşuň. Şol ýurt saýlanan abunalar şu linkleri alar.</div>
+
+        <div class="form-label">Ýurt</div>
+        <select id="serverCountry" class="filter-select" onchange="fillServerText()"></select>
+
+        <div class="form-label">Linkler (her setirde bir)</div>
+        <textarea id="serverText" class="form-input" style="min-height: 160px;" placeholder="vless://...&#10;vless://..."></textarea>
+
+        <div class="form-error" id="serversError"></div>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button class="btn-action" style="background: #30363d;" onclick="closeServers()">Ýap</button>
+            <button class="btn-action" style="background: #238636; color: white; border: none;" id="serversSaveBtn" onclick="saveServers()">Ýatda sakla</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    let pw = '';
+    try { pw = localStorage.getItem('sub_admin_pw') || ''; } catch (e) {}
+    let keys = [];
+    let servers = {};
+
+    const EMPTY_HTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
+        'Entek abuna ýok. Başlamak üçin ilkinji abunyňyzy dörediň.';
+
+    function esc(s) {
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    let toastTimer;
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    async function api(path, opts) {
+        opts = opts || {};
+        const res = await fetch('/api' + path, {
+            method: opts.method || 'GET',
+            headers: Object.assign({ 'Authorization': 'Bearer ' + pw }, opts.body ? { 'Content-Type': 'application/json' } : {}),
+            body: opts.body ? JSON.stringify(opts.body) : undefined
+        });
+        let data = {};
+        try { data = await res.json(); } catch (e) {}
+        if (res.status === 401) { showLogin(); throw new Error('auth'); }
+        if (!res.ok) throw new Error(data.error || ('Ýalňyşlyk ' + res.status));
+        return data;
+    }
+
+    // ---------- login ----------
+    function showLogin(msg) {
+        document.getElementById('loginError').textContent = msg || '';
+        document.getElementById('loginModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('loginPassword').focus(), 50);
+    }
+
+    async function doLogin(e) {
+        e.preventDefault();
+        pw = document.getElementById('loginPassword').value;
+        const err = document.getElementById('loginError');
+        err.textContent = '';
+        try {
+            await api('/ping');
+            try { localStorage.setItem('sub_admin_pw', pw); } catch (x) {}
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginModal').style.display = 'none';
+            loadKeys();
+        } catch (x) {
+            err.textContent = x.message === 'auth' ? 'Parol ýalňyş' : x.message;
+        }
+        return false;
+    }
+
+    function logout() {
+        pw = '';
+        try { localStorage.removeItem('sub_admin_pw'); } catch (e) {}
+        keys = [];
+        renderSubs();
+        showLogin();
+    }
+
+    // ---------- data ----------
+    async function loadKeys() {
+        try {
+            const data = await api('/keys');
+            keys = data.keys;
+            renderSubs();
+        } catch (e) {
+            if (e.message !== 'auth') document.getElementById('subList').innerHTML = esc(e.message);
+        }
+    }
+
+    function openModal() { document.getElementById('createError').textContent = ''; document.getElementById('subModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('subModal').style.display = 'none'; }
+
+    async function saveKey() {
+        const err = document.getElementById('createError');
+        const name = document.getElementById('keyName').value.trim();
+        if (!name) { err.textContent = 'Açaryň adyny giriziň!'; return; }
+        err.textContent = '';
+        const btn = document.getElementById('createBtn');
+        btn.disabled = true;
+        try {
+            await api('/keys', { method: 'POST', body: {
+                name: name,
+                days: document.getElementById('keyDays').value || 30,
+                devices: document.getElementById('keyDevices').value || 0,
+                gb: document.getElementById('keyGB').value || 0,
+                country: document.querySelector('input[name="country"]:checked').value,
+                title: document.getElementById('keyTitle').value,
+                announce: document.getElementById('keyAnnounce').value,
+                configs: document.getElementById('keyConfigs').value
+            }});
+            document.getElementById('keyName').value = '';
+            document.getElementById('keyConfigs').value = '';
+            closeModal();
+            toast('Abuna döredildi');
+            await loadKeys();
+        } catch (e) {
+            if (e.message !== 'auth') err.textContent = e.message;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function patchKey(id, body, okMsg) {
+        try {
+            await api('/keys/' + id, { method: 'PATCH', body: body });
+            if (okMsg) toast(okMsg);
+        } catch (e) { if (e.message !== 'auth') toast(e.message); }
+        await loadKeys();
+    }
+
+    async function deleteKey(id) {
+        if (!confirm('Bu abuna pozulsynmy?')) return;
+        try {
+            await api('/keys/' + id, { method: 'DELETE' });
+            toast('Pozuldy');
+        } catch (e) { if (e.message !== 'auth') toast(e.message); }
+        await loadKeys();
+    }
+
+    async function resetDevices(id) {
+        try {
+            await api('/keys/' + id + '/reset-devices', { method: 'POST', body: {} });
+            toast('Cihazlar arassalandy');
+        } catch (e) { if (e.message !== 'auth') toast(e.message); }
+        await loadKeys();
+    }
+
+    function extendKey(id) {
+        const v = prompt('Näçe gün uzaltmaly? (minus san = azaltmak)', '30');
+        if (v === null) return;
+        const n = parseInt(v, 10);
+        if (!n) return;
+        patchKey(id, { extendDays: n }, 'Möhlet täzelendi');
+    }
+
+    // ---------- helpers ----------
+    function subLink(id) { return location.origin + '/sub/' + id; }
+
+    function copyText(text) {
+        const done = () => toast('Göçürildi!');
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+        } else {
+            fallbackCopy(text, done);
+        }
+    }
+
+    function fallbackCopy(text, done) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { prompt('Linki göçüriň:', text); }
+        document.body.removeChild(ta);
+    }
+
+    function fmtDate(ms) {
+        const d = new Date(ms);
+        return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear();
+    }
+
+    // ---------- list ----------
+    function renderSubs() {
+        const list = document.getElementById('subList');
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+
+        const filtered = keys.filter(k =>
+            (status === 'all' || k.state === status) &&
+            (k.name.toLowerCase().includes(search) || k.country.toLowerCase().includes(search)));
+
+        document.getElementById('totalSubs').innerText = keys.length;
+        document.getElementById('activeSubs').innerText = keys.filter(k => k.state === 'active').length;
+        document.getElementById('expSubs').innerText = keys.filter(k => k.state === 'expired').length;
+        document.getElementById('totalConfigs').innerText = keys.reduce((n, k) => n + k.configCount, 0);
+        document.getElementById('subCountText').innerText = keys.length;
+
+        if (filtered.length === 0) {
+            list.className = 'empty-area';
+            list.innerHTML = EMPTY_HTML;
+            return;
+        }
+
+        list.className = '';
+        list.innerHTML = filtered.map(k => `
+            <div class="key-card ${k.state === 'active' ? '' : 'is-off'}">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                        <label class="switch">
+                            <input type="checkbox" ${k.active ? 'checked' : ''} data-act="toggle" data-id="${esc(k.id)}">
+                            <span class="slider"></span>
+                        </label>
+                        <div style="min-width: 0;">
+                            <div class="key-title">${esc(k.country)} - ${esc(k.name)}</div>
+                            <div class="key-meta">⚡ Happ 🔒 • Device ${k.deviceCount}/${k.devices ? k.devices : '∞'} • ${k.gb ? esc(k.gb) + ' GB' : '∞ GB'} • ${k.configCount} konfig</div>
+                        </div>
+                    </div>
+                    <span class="badge ${k.state}">${fmtDate(k.expiresAt)}</span>
+                </div>
+                <div class="action-grid">
+                    <button class="action-btn" data-act="copy" data-id="${esc(k.id)}">Göçür</button>
+                    <button class="action-btn" data-act="test" data-id="${esc(k.id)}">Barla</button>
+                    <button class="action-btn" data-act="extend" data-id="${esc(k.id)}">Möhlet</button>
+                    <button class="action-btn" data-act="reset" data-id="${esc(k.id)}">Arassala</button>
+                    <button class="action-btn danger" data-act="delete" data-id="${esc(k.id)}">Poz</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('subList').addEventListener('click', e => {
+        const b = e.target.closest('button[data-act]');
+        if (!b) return;
+        const id = b.dataset.id;
+        switch (b.dataset.act) {
+            case 'copy': copyText(subLink(id)); break;
+            case 'test': window.open(subLink(id), '_blank'); break;
+            case 'extend': extendKey(id); break;
+            case 'reset': resetDevices(id); break;
+            case 'delete': deleteKey(id); break;
+        }
+    });
+
+    document.getElementById('subList').addEventListener('change', e => {
+        const t = e.target;
+        if (t.matches('input[data-act="toggle"]')) patchKey(t.dataset.id, { active: t.checked });
+    });
+
+    // ---------- servers ----------
+    async function openServers() {
+        document.getElementById('serversError').textContent = '';
+        try {
+            const data = await api('/servers');
+            servers = data.servers || {};
+        } catch (e) {
+            if (e.message !== 'auth') toast(e.message);
+            return;
+        }
+        const sel = document.getElementById('serverCountry');
+        if (!sel.options.length) {
+            document.querySelectorAll('#countryList input[name="country"]').forEach(r => {
+                const o = document.createElement('option');
+                o.value = r.value;
+                o.textContent = r.value;
+                sel.appendChild(o);
+            });
+        }
+        fillServerText();
+        document.getElementById('serversModal').style.display = 'flex';
+    }
+
+    function closeServers() { document.getElementById('serversModal').style.display = 'none'; }
+
+    function fillServerText() {
+        const c = document.getElementById('serverCountry').value;
+        document.getElementById('serverText').value = (servers[c] || []).join('\n');
+    }
+
+    async function saveServers() {
+        const c = document.getElementById('serverCountry').value;
+        const err = document.getElementById('serversError');
+        err.textContent = '';
+        const next = Object.assign({}, servers);
+        next[c] = document.getElementById('serverText').value;
+        const btn = document.getElementById('serversSaveBtn');
+        btn.disabled = true;
+        try {
+            const data = await api('/servers', { method: 'PUT', body: { servers: next } });
+            servers = data.servers;
+            fillServerText();
+            toast('Ýatda saklandy: ' + (servers[c] || []).length + ' link');
+            loadKeys();
+        } catch (e) {
+            if (e.message !== 'auth') err.textContent = e.message;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // ---------- start ----------
+    if (pw) loadKeys(); else showLogin();
+</script>
+
+</body>
+</html>
