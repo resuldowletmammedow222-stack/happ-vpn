@@ -49,12 +49,4 @@
           "tcpKeepAliveIdle": 100
         }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    }
-  ]
-}
 
