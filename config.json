@@ -1,1 +1,60 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "8.6.112.0",
+            "port": 443,
+            "users": [
+              {
+                "id": "ab9b5670-d0f5-4211-9e28-9841a18f6bda",
+                "flow": "none",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/muhasv",
+          "headers": {
+            "Host": "finlandfc.alexvpns.ru"
+          }
+        },
+        "tlsSettings": {
+          "serverName": "finlandfc.alexvpns.ru",
+          "fingerprint": "chrome",
+          "alpn": ["h2", "http/1.1"]
+        },
+        "sockopt": {
+          "tcpKeepAliveIdle": 100
+        }
+      },
+      "tag": "proxy"
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    }
+  ]
+}
 
