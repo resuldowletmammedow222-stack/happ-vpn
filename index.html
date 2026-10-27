@@ -2,229 +2,65 @@
 <html lang="tk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abunalar - Resulpanel</title>
+    <title>VPN Panel</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .header h1 {
-            color: #ffffff;
-            font-size: 22px;
-        }
-
-        .subtitle {
-            color: #8b949e;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .top-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn-add {
-            flex: 2;
-            background-color: #21262d;
-            color: #ffffff;
-            border: 1px solid #30363d;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .btn-servers {
-            flex: 1;
-            background-color: #21262d;
-            color: #8b949e;
-            border: 1px solid #30363d;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background-color: #161b22;
-            border: 1px solid #21262d;
-            border-radius: 8px;
-            padding: 15px;
-        }
-
-        .stat-title {
-            font-size: 13px;
-            color: #8b949e;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-
-        .stat-title .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .blue-dot { background-color: #58a6ff; }
-        .green-dot { background-color: #3fb950; }
-        .yellow-dot { background-color: #d29922; }
-        .purple-dot { background-color: #a371f7; }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .filter-select {
-            width: 100%;
-            background-color: transparent;
-            color: #8b949e;
-            border: none;
-            padding: 8px 0;
-            margin-bottom: 15px;
-            outline: none;
-        }
-
-        .config-box {
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            word-break: break-all;
-            color: #7ee787;
-            margin-top: 10px;
-        }
-
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .netlify-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            padding: 8px 16px;
-            border-radius: 20px;
-            color: #ffffff;
-            font-size: 13px;
-            text-decoration: none;
-        }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; }
+        .vpn-card { background: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .expired { color: #ef4444; font-weight: bold; }
+        .active { color: #22c55e; font-weight: bold; }
+        button { background: #3b82f6; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>Abunalar</h1>
-        </div>
-        <div class="subtitle">Abunalaryňyzy dolandyryň</div>
-
-        <div class="top-buttons">
-            <button class="btn-add" onclick="addHappConfig()">+ Täze abuna</button>
-            <button class="btn-servers">⚙ Serwerler</button>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title"><span class="dot blue-dot"></span> Jemi abunalar</div>
-                <div class="stat-value" id="totalCount">1</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title"><span class="dot green-dot"></span> İşjeň</div>
-                <div class="stat-value" id="activeCount">1</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title"><span class="dot yellow-dot"></span> Möhleti gutarýan</div>
-                <div class="stat-value">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title"><span class="dot purple-dot"></span> Jemi konfigler</div>
-                <div class="stat-value">1</div>
-            </div>
-        </div>
-
-        <select class="filter-select">
-            <option>Ähli ýagdaý</option>
-        </select>
-
-        <!-- Happ VPN Konfigurationsy -->
-        <div class="config-box" id="happConfig">
-            vless://Resul_Echo-HappVPN@1.1.1.1:443?type=grpc&security=reality&encryption=none&fp=chrome&sni=google.com&sid=123456#Happ_VPN
-        </div>
-
-        <div class="footer">
-            <div class="netlify-badge">
-                <span>✦ Powered by Netlify</span>
-            </div>
-        </div>
-    </div>
+    <h2>Meniň VPN Panelim</h2>
+    <div id="vpn-list"></div>
 
     <script>
-        function addHappConfig() {
-            const randomId = Math.floor(1000 + Math.random() * 9000);
-            const newConfig = `vless://Resul_Echo-HappVPN-${randomId}@1.1.1.1:443?type=grpc&security=reality&encryption=none&fp=chrome&sni=google.com&sid=${randomId}#Happ_VPN_${randomId}`;
-            
-            document.getElementById('happConfig').innerText = newConfig;
-            
-            let total = parseInt(document.getElementById('totalCount').innerText);
-            let active = parseInt(document.getElementById('activeCount').innerText);
-            document.getElementById('totalCount').innerText = total + 1;
-            document.getElementById('activeCount').innerText = active + 1;
+        // VPN-leriň sanawy (Bir ýa-da birnäçe edip goşup bilersiňiz)
+        const vpnData = [
+            {
+                name: "🇫🇮 Finland VPN",
+                expireDate: "2026-11-01T23:59:59", // Möhlet güni we wagty
+                link: "vless://ab9b5670-d0f5-4211-9e28-9841a18f6bda@8.6.112.0:443?encryption=none&security=tls&sni=finlandcf.alexvpns.ru&alpn=h2&fp=chrome&type=ws&host=finlandcf.alexvpns.ru&path=%2Fmuhasv&headers=%7B%0A%20%20%22Host%22%3A%20%22finlandcf.alexvpns.ru%22%0A%7D&fragment=2%2C0-1%2Ctlshello%2Cnull&fm=%7B%22tcp%22%3A%5B%7B%22settings%22%3A%7B%22delay%22%3A%220-1%22%2C%22length%22%3A%222%22%2C%22packets%22%3A%22tlshello%22%7D%2C%22type%22%3A%22fragment%22%7D%5D%7D#%F0%9F%87%AB%F0%9F%87%AE%20Finland"
+            }
+            // Başga VPN-leri hem şu formatda goşup bilersiňiz:
+            // { name: "🇺🇸 USA VPN", expireDate: "2026-05-10T00:00:00", link: "vless://..." }
+        ];
 
-            alert("Täze Happ VPN kody döredildi!");
+        const container = document.getElementById("vpn-list");
+        const now = new Date().getTime();
+
+        vpnData.forEach((vpn, index) => {
+            const expireTime = new Date(vpn.expireDate).getTime();
+            const card = document.createElement("div");
+            card.className = "vpn-card";
+
+            if (now > expireTime) {
+                // Möhleti dolan ýagdaýy (Bloklanan ýaly görkezmek)
+                card.innerHTML = `
+                    <h3>${vpn.name}</h3>
+                    <p class="expired">⚠️ Bu VPN-iň möhleti doldy (${new Date(vpn.expireDate).toLocaleDateString()}) we bloklandy!</p>
+                `;
+            } else {
+                // Hozirçe işleýän ýagdaýy
+                card.innerHTML = `
+                    <h3>${vpn.name}</h3>
+                    <p class="active">Status: İşleýär (Möhleti: ${new Date(vpn.expireDate).toLocaleDateString()})</p>
+                    <input type="text" value="${vpn.link}" readonly style="width: 70%; padding: 5px;" id="link-${index}">
+                    <button onclick="copyLink('link-${index}')">Kopiroit etmek</button>
+                `;
+            }
+            container.appendChild(card);
+        });
+
+        function copyLink(id) {
+            const copyText = document.getElementById(id);
+            copyText.select();
+            document.execCommand("copy");
+            alert("VPN kody göçürildi!");
         }
     </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
