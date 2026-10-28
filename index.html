@@ -2,65 +2,501 @@
 <html lang="tk">
 <head>
     <meta charset="UTF-8">
-    <title>VPN Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Management</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; }
-        .vpn-card { background: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-        .expired { color: #ef4444; font-weight: bold; }
-        .active { color: #22c55e; font-weight: bold; }
-        button { background: #3b82f6; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .header-btn {
+            margin-bottom: 30px;
+        }
+
+        /* Ýaşyl Döret+ Butony */
+        .btn-green {
+            background-color: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+        }
+
+        .btn-green:hover {
+            background-color: #2ea043;
+        }
+
+        .btn-green:active {
+            transform: scale(0.98);
+        }
+
+        .btn-cancel {
+            background-color: #da3633;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background-color: #f85149;
+        }
+
+        /* Düzülen kodlar bölümi */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #58a6ff;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
+        }
+
+        .code-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .code-card {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .code-card.expired {
+            border-color: #da3633;
+            background: #1c191a;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .code-info h4 {
+            color: #f0f6fc;
+            font-size: 16px;
+        }
+
+        .code-info p {
+            font-size: 13px;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+
+        .time-info {
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .time-active {
+            color: #3fb950;
+        }
+
+        .time-expired {
+            color: #f85149;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .badge-active {
+            background: #238636;
+            color: white;
+        }
+
+        .badge-expired {
+            background: #da3633;
+            color: white;
+        }
+
+        .config-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #58a6ff;
+            word-break: break-all;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .config-box.blocked {
+            color: #f85149;
+            font-weight: bold;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Kopýala Düwmesi - Ýaşyl */
+        .btn-copy {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-copy:hover {
+            background-color: #2ea043;
+        }
+
+        .btn-copy:disabled {
+            background-color: #373e47;
+            color: #8b949e;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Poz Düwmesi - Gyzyl */
+        .btn-delete {
+            background-color: #da3633;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #f85149;
+        }
+
+        /* Modal (Penjire) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .modal h3 {
+            margin-bottom: 16px;
+            color: #f0f6fc;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Meniň VPN Panelim</h2>
-    <div id="vpn-list"></div>
+    <!-- Ekranyň ortasyndaky Döret+ Butony -->
+    <div class="header-btn">
+        <button class="btn-green" onclick="openModal()">Döret +</button>
+    </div>
+
+    <!-- Düzülen kodlar bölümi -->
+    <div class="container">
+        <div class="title">Düzülen kodlar</div>
+        <div class="code-list" id="codeList">
+            <!-- Kodlar şu ýere awtomatiki goşular -->
+        </div>
+    </div>
+
+    <!-- Modal Penjiresi -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3>Täze Kod Döret</h3>
+            
+            <div class="form-group">
+                <label for="codeName">Kod ady</label>
+                <input type="text" id="codeName" placeholder="Kodyň adyny ýazyň...">
+            </div>
+
+            <!-- Kod adynyn asagynda Mohlet guni -->
+            <div class="form-group">
+                <label for="codeDays">Möhlet güni (gün)</label>
+                <input type="number" id="codeDays" min="1" placeholder="Mysal üçin: 30">
+            </div>
+
+            <div class="form-group">
+                <label for="codeGb">Näçe GB</label>
+                <input type="number" id="codeGb" min="1" placeholder="Mysal üçin: 10">
+            </div>
+
+            <div class="form-group">
+                <label for="codeSub">Subscription (Ýurt)</label>
+                <select id="codeSub">
+                    <option value="Finland">Finland 🇫🇮</option>
+                    <option value="Germany">Germany 🇩🇪</option>
+                    <option value="Netherlands">Netherlands 🇳🇱</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Ýatyr</button>
+                <button class="btn-green" onclick="createCode()">Döret</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // VPN-leriň sanawy (Bir ýa-da birnäçe edip goşup bilersiňiz)
-        const vpnData = [
-            {
-                name: "🇫🇮 Finland VPN",
-                expireDate: "2026-11-01T23:59:59", // Möhlet güni we wagty
-                link: "vless://ab9b5670-d0f5-4211-9e28-9841a18f6bda@8.6.112.0:443?encryption=none&security=tls&sni=finlandcf.alexvpns.ru&alpn=h2&fp=chrome&type=ws&host=finlandcf.alexvpns.ru&path=%2Fmuhasv&headers=%7B%0A%20%20%22Host%22%3A%20%22finlandcf.alexvpns.ru%22%0A%7D&fragment=2%2C0-1%2Ctlshello%2Cnull&fm=%7B%22tcp%22%3A%5B%7B%22settings%22%3A%7B%22delay%22%3A%220-1%22%2C%22length%22%3A%222%22%2C%22packets%22%3A%22tlshello%22%7D%2C%22type%22%3A%22fragment%22%7D%5D%7D#%F0%9F%87%AB%F0%9F%87%AE%20Finland"
-            }
-            // Başga VPN-leri hem şu formatda goşup bilersiňiz:
-            // { name: "🇺🇸 USA VPN", expireDate: "2026-05-10T00:00:00", link: "vless://..." }
-        ];
-
-        const container = document.getElementById("vpn-list");
-        const now = new Date().getTime();
-
-        vpnData.forEach((vpn, index) => {
-            const expireTime = new Date(vpn.expireDate).getTime();
-            const card = document.createElement("div");
-            card.className = "vpn-card";
-
-            if (now > expireTime) {
-                // Möhleti dolan ýagdaýy (Bloklanan ýaly görkezmek)
-                card.innerHTML = `
-                    <h3>${vpn.name}</h3>
-                    <p class="expired">⚠️ Bu VPN-iň möhleti doldy (${new Date(vpn.expireDate).toLocaleDateString()}) we bloklandy!</p>
-                `;
-            } else {
-                // Hozirçe işleýän ýagdaýy
-                card.innerHTML = `
-                    <h3>${vpn.name}</h3>
-                    <p class="active">Status: İşleýär (Möhleti: ${new Date(vpn.expireDate).toLocaleDateString()})</p>
-                    <input type="text" value="${vpn.link}" readonly style="width: 70%; padding: 5px;" id="link-${index}">
-                    <button onclick="copyLink('link-${index}')">Kopiroit etmek</button>
-                `;
-            }
-            container.appendChild(card);
-        });
-
-        function copyLink(id) {
-            const copyText = document.getElementById(id);
-            copyText.select();
-            document.execCommand("copy");
-            alert("VPN kody göçürildi!");
+        function getCodes() {
+            return JSON.parse(localStorage.getItem('saved_codes')) || [];
         }
-    </script>
 
+        function saveCodes(codes) {
+            localStorage.setItem('saved_codes', JSON.stringify(codes));
+        }
+
+        function openModal() {
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('codeName').value = '';
+            document.getElementById('codeDays').value = '';
+            document.getElementById('codeGb').value = '';
+        }
+
+        // Saýlanan ýurda görä hakyky serwer kodlary
+        function generateServerConfig(subscription) {
+            if (subscription === 'Finland') {
+                return `vless://ab9b5670-d0f5-4211-9e28-9841a18f6bda@8.6.112.0:443?encryption=none&security=tls&sni=finlandcf.alexvpns.ru&alpn=h2&fp=chrome&type=ws&host=finlandcf.alexvpns.ru&path=%2Fmuhasv&headers=%7B%0A%20%20%22Host%22%3A%20%22finlandcf.alexvpns.ru%22%0A%7D&fragment=2%2C0-1%2Ctlshello%2Cnull&fm=%7B%22tcp%22%3A%5B%7B%22settings%22%3A%7B%22delay%22%3A%220-1%22%2C%22length%22%3A%222%22%2C%22packets%22%3A%22tlshello%22%7D%2C%22type%22%3A%22fragment%22%7D%5D%7D#%F0%9F%87%AB%F0%9F%87%AE%20Finland`;
+            } else if (subscription === 'Germany') {
+                return `vless://759c9a8d-752f-4831-a731-864900aaa2ee@146.75.35.45:443?encryption=none&security=tls&sni=accounts.fastly.com&alpn=h3&fp=chrome&type=xhttp&mode=packet-up&host=dayka-unkepravber.net&path=%2F&extra=%7B%22scMaxEachPostBytes%22%3A%221000000%22%2C%22scMinPostsIntervalMs%22%3A%2230%22%2C%22xPaddingBytes%22%3A%22100-1000%22%2C%22xmux%22%3A%7B%22maxConcurrency%22%3A%22100%22%7D%7D&fragment=1-3%2C10-20%2Ctlshello%2Cnull&fm=%7B%22tcp%22%3A%5B%7B%22settings%22%3A%7B%22delay%22%3A%2210-20%22%2C%22length%22%3A%221-3%22%2C%22packets%22%3A%22tlshello%22%7D%2C%22type%22%3A%22fragment%22%7D%5D%7D#%F0%9F%87%A9%F0%9F%87%AA%20Germany`;
+            } else if (subscription === 'Netherlands') {
+                return `vless://nl-sub-10293847@nl.resulpanel.netlify.app:443?encryption=none&security=tls&type=ws&host=nl.resulpanel.netlify.app&path=%2Fvless#%F0%9F%87%B3%F0%9F%87%B1%20Netherlands`;
+            }
+        }
+
+        // Galan wagty hasaplaýan funksiýa
+        function calculateRemainingTime(expireTimestamp) {
+            const now = Date.now();
+            const diff = expireTimestamp - now;
+
+            if (diff <= 0) {
+                return { isExpired: true, text: 'Möhleti doldy (Blok)' };
+            }
+
+            const totalHours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(totalHours / 24);
+            const hours = totalHours % 24;
+
+            if (days > 0) {
+                return { isExpired: false, text: `Möhlet: ${days} gün ${hours} sagat galdy` };
+            } else {
+                return { isExpired: false, text: `Möhlet: ${hours} sagat galdy` };
+            }
+        }
+
+        function loadCodes() {
+            const data = getCodes();
+            const list = document.getElementById('codeList');
+            list.innerHTML = '';
+            
+            if(data.length === 0) {
+                list.innerHTML = '<p style="color:#8b949e; text-align:center;">Heniz hiç hili kod düzülmedi.</p>';
+                return;
+            }
+
+            data.forEach(item => {
+                const timeData = calculateRemainingTime(item.expireTimestamp);
+                const isExpired = timeData.isExpired;
+
+                const card = document.createElement('div');
+                card.className = `code-card ${isExpired ? 'expired' : ''}`;
+                card.innerHTML = `
+                    <div class="code-header">
+                        <div class="code-info">
+                            <h4>${item.name}</h4>
+                            <p>${item.gb} GB • ${item.subscription}</p>
+                            <div class="time-info ${isExpired ? 'time-expired' : 'time-active'}">
+                                ${timeData.text}
+                            </div>
+                        </div>
+                        <span class="badge ${isExpired ? 'badge-expired' : 'badge-active'}">
+                            ${isExpired ? 'Möhleti doldy (Blok)' : 'Aktiw'}
+                        </span>
+                    </div>
+                    <div class="config-box ${isExpired ? 'blocked' : ''}">
+                        ${isExpired ? 'BLOKLANDY (WAGTY DOLAN)' : item.config}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-copy" ${isExpired ? 'disabled' : ''} onclick="copyConfig('${item.config}', ${isExpired})">Kopýala</button>
+                        <button class="btn-delete" onclick="deleteCode(${item.id})">Poz</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function createCode() {
+            const name = document.getElementById('codeName').value.trim();
+            const days = parseInt(document.getElementById('codeDays').value, 10);
+            const gb = document.getElementById('codeGb').value.trim();
+            const subscription = document.getElementById('codeSub').value;
+
+            if(!name || !gb || isNaN(days) || days <= 0) {
+                alert('Haýyş, ähli meýdançalary dogry dolduryň!');
+                return;
+            }
+
+            const now = Date.now();
+            const expireTimestamp = now + (days * 24 * 60 * 60 * 1000); // Güni millisekundlara öwürmek
+
+            const codes = getCodes();
+            const newCode = {
+                id: Date.now(),
+                name: name,
+                days: days,
+                gb: gb,
+                subscription: subscription,
+                expireTimestamp: expireTimestamp,
+                config: generateServerConfig(subscription)
+            };
+
+            codes.push(newCode);
+            saveCodes(codes);
+
+            closeModal();
+            loadCodes();
+        }
+
+        function deleteCode(id) {
+            let codes = getCodes();
+            codes = codes.filter(item => item.id !== id);
+            saveCodes(codes);
+            loadCodes();
+        }
+
+        function copyConfig(text, isExpired) {
+            if (isExpired) {
+                alert('Bu kodyň möhleti dolanylygy sebäpli kopýalap bolanok!');
+                return;
+            }
+
+            // Ähli brauzerler üçin kopýalamak funksiýasy
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Serwer kody üstünlikli göçürildi!');
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('Serwer kody üstünlikli göçürildi!');
+            } catch (err) {
+                alert('Kopýalamak başartmady.');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Sahypa açylanda kodlary ýüklemek
+        loadCodes();
+
+        // Her minutda möhlet wagtyny täzelemek
+        setInterval(loadCodes, 60000);
+    </script>
 </body>
 </html>
